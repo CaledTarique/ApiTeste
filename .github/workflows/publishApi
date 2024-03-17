@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Defina o SDK do .NET para a versão 5.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.x
+
+      # Restaura as dependências do projeto
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Compila o projeto
+      - name: Build
+        run: dotnet build --configuration Release
+
+      # Execute testes (substitua os comandos e caminhos de teste pelos adequados)
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+
+      # Publica o projeto
+      - name: Publish
+        run: dotnet publish -c Release -o publish
+
+      # Adiciona um artefato para a pasta publicada
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: published-files
+          path: ./publish
